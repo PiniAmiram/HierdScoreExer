@@ -1,0 +1,11 @@
+<div>Candidates</div>
+
+<ul *ngFor="let candidiate of candidates;">
+  <li>Hello {{candidiate.name}}</li>
+
+  <ul style="margin-block: 30px;" *ngFor="let ex of candidiate.experience;">
+    <li>Worked as: {{ex.jobTitle}}</li>
+    <li>From: {{ex.startDate}} - To: {{ex.endDate}}</li>
+  </ul>
+</ul>
+
