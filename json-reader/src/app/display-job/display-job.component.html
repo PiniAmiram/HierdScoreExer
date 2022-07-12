@@ -1,11 +1,14 @@
-<div>Candidates</div>
+<div *ngIf="candidates.length === 0">{{message}}</div>
 
 <ul *ngFor="let candidiate of candidates;">
   <li>Hello {{candidiate.name}}</li>
 
-  <ul style="margin-block: 30px;" *ngFor="let ex of candidiate.experience;">
-    <li>Worked as: {{ex.jobTitle}}</li>
-    <li>From: {{ex.startDate}} - To: {{ex.endDate}}</li>
+  <ul *ngFor="let ex of candidiate.experience;">
+    <li>Worked as: {{ex.jobTitle}}, From {{ex.startDate}} To {{ex.endDate}}</li>
+    <li *ngIf="ex.gap">Gap between jobs: {{ex.gap}}</li>
+  </ul>
+
+  <ul *ngIf="candidiate.experience.length === 0">
+    <li>Still has no experience</li>
   </ul>
 </ul>
-

@@ -3,26 +3,14 @@ import { HttpClient } from '@angular/common/http';
 
 const baseUrl = 'http://localhost:5000';
 
-interface JsonCandidiate {
-  contact_info: { 
-    name: {
-      given_name: string
-    }
-  },
-  experience: {
-    description: string;
-    start_date: string; 
-    end_date: string;
-  }[]
-}
-
 interface Candidiate {
   name: string;
   experience: {
     jobTitle: string;
-    startDate: string;
-    endDate: string;
-  }[]
+    startDate: Date;
+    endDate: Date;
+    gap?: string;
+  }[];
 }
 
 @Component({
@@ -32,29 +20,23 @@ interface Candidiate {
 })
 export class DisplayJobComponent implements OnInit {
   candidates: Candidiate[] = [];
+  message: string = 'Loading...';
 
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    try {
-      this.http.get(baseUrl + '/json-reader')
-        .subscribe((res: any) => {
-          this.candidates = this.getCandidiateFromJson(res);
+    this.http.get<{ candidiates: Candidiate[] }>(baseUrl + '/json-reader')
+      .subscribe({
+        next: (res) => {
+          this.candidates = res?.candidiates || [];
+          if (this.candidates.length === 0) {
+            this.message = 'No results were found.';
+          }
+        },
+        error: (error) => {
+          this.message = 'Something went wrong, please try to refresh the page.';
+          console.log('Error when calling the server: ' + error);
         }
-      );
-    } catch (error) {
-      console.log('Error when calling the server: ' + error);
-    }
-  }
-
-  getCandidiateFromJson(candidiates: JsonCandidiate[]): Candidiate[] {
-    return candidiates.map(({contact_info, experience}: JsonCandidiate) => ({
-      name: contact_info?.name?.given_name,
-      experience: experience?.map(({description, start_date, end_date}) => ({
-        jobTitle: description,
-        startDate: start_date,
-        endDate: end_date
-      }))
-    }));
+      });
   }
 }
